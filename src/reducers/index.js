@@ -1,4 +1,4 @@
-import {ADD_MOVIES, ADD_FAVOURITE, REMOVE_FAVOURITE} from '../actions'
+import {ADD_MOVIES, ADD_FAVOURITE, REMOVE_FAVOURITE, SHOW_FAVOURITE} from '../actions'
 
 const initialMoviesState=
 {
@@ -31,10 +31,15 @@ export default function movies (state=initialMoviesState,action)
         case REMOVE_FAVOURITE:
             const fav=state.favourites;
             const filteredarray=fav.filter(movie=>movie.Title!== action.movie.Title);
-            console.log('hey');
+           
             return {
                 ...state,
                favourites: filteredarray
+            }
+        case SHOW_FAVOURITE:
+            return {
+                ...state,
+                showFavourites:action.value
             }
         default:
           return state;
