@@ -1,44 +1,40 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {data} from '../data';
 import Navbar from './Navbar';
 import MovieCard from './MovieCard';
-import {addMovies,setshowFavourite} from '../actions'
+import {addMovies,setshowFavourite} from '../actions';
+//import { connect } from '../index';
 
 class App extends React.Component
  {
    componentDidMount()
    {
-     const {store}=this.props;
-     //make api call
-     //dispatcg an action
-     store.subscribe(()=>{
+     
 
-        this.forceUpdate();
-     });
-     store.dispatch(addMovies(data))
+     this.props.dispatch(addMovies(data))
    }
    isMovieFavourite=(movie)=>
    {
-       const {favourites}=this.props.store.getState();
-       const index=favourites.indexOf(movie);
+       const {movies}=this.props;
+       const index=movies.favourites.indexOf(movie);
        if(index !== -1)
        return true;
        return false;
    }
   onChangeTab=(value)=>
   {
-    const {store}=this.props;
-
-    store.dispatch(setshowFavourite(value))
+    const {dispatch}=this.props;
+    dispatch(setshowFavourite(value))
   }
    render()
    {
-    
-    const {list,favourites,showFavourites}=this.props.store.getState();
+    const {movies,search}=this.props;
+    const {list,favourites,showFavourites}=movies;
     const displayMovie= showFavourites?favourites:list;
     return (
       <div className="App">
-       <Navbar />
+       <Navbar dispatch={this.props.dispatch} search={search}/>
        <div className="main">
          <div className="tabs">
            <div className={`tab ${showFavourites?'':'active-tab'}`} onClick={()=>this.onChangeTab(false)}>Movies</div>
@@ -49,16 +45,37 @@ class App extends React.Component
             <MovieCard 
             movie={movie} 
             key={`movies-${index}`} 
-            dispatch={this.props.store.dispatch}
+            dispatch={this.props.dispatch}
             isFavourite={this.isMovieFavourite(movie)}/>
           ))
            }
          </div>
-         {displayMovie.length===0?<div className="no-movies"No Movies To Display></div>:null}
+         {displayMovie.length===0?<div className="no-movies">No Movies To Display</div>:null}
        </div>
       </div>
     );
       }
 }
 
-export default App;
+//class AppWrapper extends React.Component
+//{
+ // render()
+ // {
+   // return(
+   // 
+    //    <StoreContext.Consumer>
+    //        {(store)=> <App store={store}/>}
+     //   </StoreContext.Consumer>
+   // );
+ // }
+//}
+function mapStateToProps(state)
+{
+  return(
+  {
+   movies: state.movies,
+   search: state.search
+  });
+}
+const connectedAppComponent=connect(mapStateToProps)(App)
+export default connectedAppComponent;
